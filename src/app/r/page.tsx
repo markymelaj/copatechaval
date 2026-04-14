@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { ExternalLink, MapPinned } from 'lucide-react';
 import { MapPreview } from '@/components/MapPreview';
 import { clp, statusLabel } from '@/lib/format';
@@ -28,13 +27,17 @@ type DriverOrder = {
 };
 
 export default function DriverPage() {
-  const params = useSearchParams();
-  const accessToken = params.get('t') || params.get('accessToken') || '';
+  const [accessToken, setAccessToken] = useState('');
   const [orders, setOrders] = useState<DriverOrder[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
   const watchRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setAccessToken(params.get('t') || params.get('accessToken') || '');
+  }, []);
 
   async function loadOrders() {
     if (!accessToken) return;
@@ -52,6 +55,7 @@ export default function DriverPage() {
   }
 
   useEffect(() => {
+    if (!accessToken) return;
     loadOrders();
     const interval = window.setInterval(loadOrders, 12000);
     return () => window.clearInterval(interval);

@@ -1,12 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 export const dynamic = 'force-dynamic';
 
 export default function RegistroExitoPage() {
-  const params = useSearchParams();
-  const slug = params.get('slug');
+  const [slug, setSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setSlug(params.get('slug'));
+  }, []);
 
   return (
     <main className="page center">
